@@ -1,16 +1,16 @@
-package com.sentinel.security
+package com.example.sentinel
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://YOUR_LAPTOP_IP:5000/"
+    private const val BASE_URL = "http://192.168.68.122:8080/"
 
     val instance: ApiService by lazy {
-        Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(ApiService::class.java)
+        retrofit.create(ApiService::class.java)
     }
 }

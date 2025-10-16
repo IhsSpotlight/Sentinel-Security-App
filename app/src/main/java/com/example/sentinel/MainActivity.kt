@@ -1,4 +1,4 @@
-package com.sentinel.security
+package com.example.sentinel
 
 import android.os.Bundle
 import android.widget.EditText
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
-
+//http://192.168.68.122:8080
     // 🔸 Send camera URL to the Python server
     private fun addCameraToServer(url: String) {
         RetrofitClient.instance.addCamera(CameraRequest(url)).enqueue(object : Callback<Void> {

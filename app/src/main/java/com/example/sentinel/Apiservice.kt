@@ -1,7 +1,9 @@
-package com.sentinel.security
+package com.example.sentinel
 
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 
 data class Alert(
     val id: Int,
@@ -11,6 +13,10 @@ data class Alert(
 )
 
 interface ApiService {
-    @GET("api/alerts")
+    @GET("alerts")
     fun getAlerts(): Call<List<Alert>>
+
+    // ❗️ Add this method to send the camera URL
+    @POST("add_camera") // Assuming your server endpoint is /add_camera
+    fun addCamera(@Body cameraRequest: CameraRequest): Call<Void>
 }

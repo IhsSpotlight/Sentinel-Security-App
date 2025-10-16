@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -46,4 +47,13 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.google.android.material:material:1.12.0")
+    implementation(libs.glide)
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+// Gson converter (to parse JSON)
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
+// OkHttp (optional but recommended)
+    implementation("com.squareup.okhttp3:okhttp:5.2.1")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
 }

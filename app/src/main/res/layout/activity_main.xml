@@ -1,5 +1,6 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -7,16 +8,19 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        tools:itemCount="15" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/addCameraBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="false"
+        android:layout_marginTop="500dp"
         android:layout_alignParentEnd="true"
-        android:layout_margin="16dp"
-        android:src="@android:drawable/ic_input_add"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#43A047"
         android:contentDescription="Add Camera"
-        android:backgroundTint="#2196F3"/>
+        android:src="@android:drawable/ic_input_add" />
 
 </RelativeLayout>
