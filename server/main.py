@@ -1,38 +1,50 @@
-# server/main.py
-from flask import Flask, jsonify, request, send_from_directory
-from camera_handler import start_camera_threads
+from flask import Flask, request, jsonify, send_from_directory
+from camera_handler import start_camera
+from ai_detection import detect_motion_and_face
 import sqlite3
 import os
+from datetime import datetime
 
 app = Flask(__name__)
+UPLOAD_FOLDER = 'static/snapshots'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Start camera streaming threads
-CAMERA_URLS = [
-    "rtsp://your_camera1_url",
-    "rtsp://your_camera2_url",
-    "rtsp://your_camera3_url",
-    "rtsp://your_camera4_url"
-]
-start_camera_threads(CAMERA_URLS)
+# Database connection
+def get_db():
+    conn = sqlite3.connect('database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
-DB = 'database.db'
-os.makedirs("static/snapshots", exist_ok=True)
-
-@app.route("/api/alerts", methods=["GET"])
+@app.route('/api/alert', methods=['GET'])
 def get_alerts():
-    conn = sqlite3.connect(DB)
+    conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, timestamp, image_path, camera_id FROM alerts ORDER BY id DESC")
-    data = [
-        {"id": row[0], "timestamp": row[1], "image_url": f"http://{request.host}/{row[2]}", "camera_id": row[3]}
-        for row in cursor.fetchall()
-    ]
+    cursor.execute("SELECT * FROM alerts ORDER BY timestamp DESC")
+    rows = cursor.fetchall()
+    alerts = [dict(row) for row in rows]
     conn.close()
-    return jsonify(data)
+    return jsonify(alerts)
 
-@app.route("/static/snapshots/<path:filename>")
-def serve_snapshots(filename):
-    return send_from_directory("static/snapshots", filename)
+@app.route('/api/upload', methods=['POST'])
+def upload_alert():
+    data = request.get_json()
+    alert_type = data.get('type', 'Unknown')
+    img_path = data.get('image_path', '')
+    ts = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    conn = get_db()
+    conn.execute("INSERT INTO alerts (type, image_path, timestamp) VALUES (?, ?, ?)",
+                 (alert_type, img_path, ts))
+    conn.commit()
+    conn.close()
+
+    return jsonify({'status': 'success'}), 200
+
+@app.route('/snapshots/<filename>')
+def get_snapshot(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+if __name__ == '__main__':
+    # Start camera streaming in background
+    start_camera()
+    app.run(host='0.0.0.0', port=5000, debug=True)
