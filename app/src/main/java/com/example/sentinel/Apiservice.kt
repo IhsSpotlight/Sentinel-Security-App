@@ -12,10 +12,6 @@ data class Alert(
     val cameraid: String
 )
 
-data class CameraRequest(
-    val camera_url: String
-)
-
 interface ApiService {
     @GET("alerts")
     fun getAlerts(): Call<List<Alert>>
