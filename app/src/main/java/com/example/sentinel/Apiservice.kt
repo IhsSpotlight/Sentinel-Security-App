@@ -9,7 +9,7 @@ data class Alert(
     val id: Int,
     val timestamp: String,
     val image_url: String,
-    val camera_id: String
+    val cameraid: String
 )
 
 data class CameraRequest(
@@ -20,7 +20,6 @@ interface ApiService {
     @GET("alerts")
     fun getAlerts(): Call<List<Alert>>
 
-    // ❗️ Add this method to send the camera URL
-    @POST("add_camera") // Assuming your server endpoint is /add_camera
+    @POST("add_camera")
     fun addCamera(@Body cameraRequest: CameraRequest): Call<Void>
 }

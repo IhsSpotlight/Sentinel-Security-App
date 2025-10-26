@@ -1,5 +1,6 @@
 package com.example.sentinel
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ class AlertAdapter : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
 
     private var alerts: List<Alert> = listOf()
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setData(data: List<Alert>) {
         alerts = data
         notifyDataSetChanged()
@@ -31,7 +33,7 @@ class AlertAdapter : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
     override fun onBindViewHolder(holder: AlertViewHolder, position: Int) {
         val alert = alerts[position]
         holder.timestamp.text = alert.timestamp
-        holder.camera.text = alert.camera_id
+        holder.camera.text = alert.cameraid
         Glide.with(holder.itemView.context).load(alert.image_url).into(holder.image)
     }
 
