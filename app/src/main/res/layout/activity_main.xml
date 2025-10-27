@@ -71,6 +71,7 @@
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
+
     <!-- ===== Scrollable content ===== -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -78,12 +79,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true">
 
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:paddingBottom="96dp"
             android:paddingTop="8dp">
+
 
             <!-- ==== Recent Activity Section ==== -->
             <TextView
@@ -94,9 +97,11 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"/>
+                android:layout_marginBottom="8dp"
+                tools:ignore="HardcodedText" />
 
             <!-- You can replace these two fixed alerts with a RecyclerView too if needed -->
+
 
 
             <!-- ==== Cameras Section ==== -->
