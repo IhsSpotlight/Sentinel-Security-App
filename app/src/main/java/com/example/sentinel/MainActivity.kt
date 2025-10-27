@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // ✅ Setup RecyclerView for alerts
-        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+        val recyclerView: RecyclerView = findViewById(R.id.recycler_cameras)
         recyclerView.layoutManager = LinearLayoutManager(this)
         alertAdapter = AlertAdapter()
         recyclerView.adapter = alertAdapter
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         fetchAlerts()
 
         // ✅ Add Camera Button setup
-        val addButton: FloatingActionButton = findViewById(R.id.addCameraBtn)
+        val addButton: FloatingActionButton = findViewById(R.id.fab_add_camera)
         addButton.setOnClickListener {
             showAddCameraDialog()
         }

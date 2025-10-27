@@ -1,26 +1,139 @@
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#121212"
+    tools:context=".MainActivity">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <!-- ===== App Bar ===== -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetStart="0dp"
+            android:background="@android:color/transparent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="28dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView
+                    android:id="@+id/app_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sentinel"
+                    android:textColor="@android:color/white"
+                    android:textSize="30.sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/dashboard_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dashboard"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    app:layout_constraintStart_toEndOf="@id/app_title"
+                    android:layout_marginStart="24dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:ignore="HardcodedText" />
+
+                <ImageView
+                    android:id="@+id/icon_alert"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/active"
+                    app:tint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:contentDescription="Alerts icon"
+                    tools:ignore="HardcodedText" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- ===== Scrollable content ===== -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
-        tools:itemCount="15" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="96dp"
+            android:paddingTop="8dp">
+
+            <!-- ==== Recent Activity Section ==== -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent Activity"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- You can replace these two fixed alerts with a RecyclerView too if needed -->
+
+
+            <!-- ==== Cameras Section ==== -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Your Cameras"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- RecyclerView for camera list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_cameras"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                tools:listitem="@layout/item_camera_card"/>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Floating Add Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addCameraBtn"
+        android:id="@+id/fab_add_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="false"
-        android:layout_marginTop="500dp"
-        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="#43A047"
-        android:contentDescription="Add Camera"
-        android:src="@android:drawable/ic_input_add" />
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/add"
+        app:tint="@android:color/white"
+        app:backgroundTint="#00695C"
+        android:contentDescription="Add new camera"/>
 
-</RelativeLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
