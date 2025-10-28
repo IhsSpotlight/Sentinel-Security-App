@@ -51,4 +51,8 @@ dependencies {
     // Use the Retrofit libraries from the version catalog
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson) // This uses the consistent 2.9.0 version
+    val media3Version = "1.3.1" // Use the latest stable version. [3]
+    implementation("androidx.media3:media3-exoplayer:$media3Version")
+    implementation("androidx.media3:media3-ui:$media3Version")
+    implementation("androidx.media3:media3-exoplayer-hls:$media3Version") // For HLS streams. [3]
 }

@@ -29,6 +29,7 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp">
 
+                <!-- Your existing Toolbar content... -->
                 <TextView
                     android:id="@+id/app_title"
                     android:layout_width="wrap_content"
@@ -79,53 +80,69 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true">
 
-
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="96dp"
-            android:paddingTop="8dp">
+            android:layout_height="wrap_content">
 
-
-            <!-- ==== Recent Activity Section ==== -->
-            <TextView
+            <LinearLayout
+                android:id="@+id/main_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Recent Activity"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"
-                tools:ignore="HardcodedText" />
+                android:orientation="vertical"
+                android:paddingBottom="96dp"
+                android:paddingTop="8dp">
 
-            <!-- You can replace these two fixed alerts with a RecyclerView too if needed -->
+                <!-- New PlayerView for Camera Stream -->
+                <androidx.media3.ui.PlayerView
+                    android:id="@+id/player_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    app:surface_type="surface_view"
+                    app:use_controller="true"
+                    tools:visibility="visible"/>
 
+                <!-- ==== Recent Activity Section ==== -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Recent Activity"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    tools:ignore="HardcodedText" />
 
+                <!-- ==== Cameras Section ==== -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Your Cameras"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginBottom="8dp"
+                    tools:ignore="HardcodedText" />
 
-            <!-- ==== Cameras Section ==== -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Your Cameras"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"/>
+                <!-- RecyclerView for camera list -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_cameras"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    tools:listitem="@layout/item_camera_card"/>
 
-            <!-- RecyclerView for camera list -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_cameras"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                tools:listitem="@layout/item_camera_card"/>
+            </LinearLayout>
 
-        </LinearLayout>
+        </RelativeLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <!-- Floating Add Button -->
@@ -139,6 +156,7 @@
         android:src="@drawable/add"
         app:tint="@android:color/white"
         app:backgroundTint="#00695C"
-        android:contentDescription="Add new camera"/>
+        android:contentDescription="Add new camera"
+        tools:ignore="HardcodedText" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
