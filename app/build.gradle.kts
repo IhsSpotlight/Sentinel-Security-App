@@ -27,6 +27,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -34,25 +35,51 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
 }
+
 dependencies {
+    // Base Android dependencies
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+
+    // Jetpack Compose dependencies
+    implementation("androidx.activity:activity-compose:1.11.0")
+    implementation("androidx.compose.ui:ui:1.9.4")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.9.4")
+    implementation("androidx.compose.material3:material3:1.3.0")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.2")
+    debugImplementation("androidx.compose.ui:ui-test-manifest:1.7.2")
+
+    // Retrofit for network requests
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+
+    // Glide for image loading
+    implementation(libs.glide)
+
+    // Media3 ExoPlayer (for camera streaming)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
+    implementation(libs.androidx.media3.exoplayer.hls)
+
+    // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // Use the Glide library from the version catalog
-    implementation(libs.glide)
-
-    // Use the Retrofit libraries from the version catalog
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson) // This uses the consistent 2.9.0 version
-    val media3Version = "1.3.1" // Use the latest stable version. [3]
-    implementation("androidx.media3:media3-exoplayer:$media3Version")
-    implementation("androidx.media3:media3-ui:$media3Version")
-    implementation("androidx.media3:media3-exoplayer-hls:$media3Version") // For HLS streams. [3]
 }
