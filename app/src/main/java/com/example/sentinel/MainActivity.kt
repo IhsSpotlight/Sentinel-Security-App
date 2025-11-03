@@ -23,7 +23,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.sentinel.ui.theme.SentinelTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +43,7 @@ class MainActivity : ComponentActivity() {
 private fun MainActivity.Surface(
     modifier: Modifier,
     color: Color,
-    content: () -> Unit
+    content: @Composable () -> Unit
 ) {
     TODO("Not yet implemented")
 }
@@ -72,7 +71,7 @@ fun LoginScreen() {
         ) {
             // App Logo
             Image(
-                painter = painterResource(id = R.drawable.imam_sunglass_pic),
+                painter = painterResource(id = R.drawable.checklist),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(100.dp)
