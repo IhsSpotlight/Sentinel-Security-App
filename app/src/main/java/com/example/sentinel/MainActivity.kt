@@ -1,5 +1,7 @@
 package com.example.sentinel
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
@@ -15,40 +17,42 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
+import androidx.core.content.edit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var alertAdapter: AlertAdapter
     private var exoPlayer: ExoPlayer? = null
     private lateinit var playerView: PlayerView
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private val savedCameras = mutableListOf<Alert>()
+    private val PREFS_NAME = "SentinelPrefs"
+    private val KEY_CAMERA_URLS = "camera_urls"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
         playerView = findViewById(R.id.player_view)
 
-        // ✅ Setup RecyclerView for alerts
         val recyclerView: RecyclerView = findViewById(R.id.recycler_cameras)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         alertAdapter = AlertAdapter { alert ->
-            // This code runs when an alert is clicked
             playVideoStream(alert.image_url)
         }
         recyclerView.adapter = alertAdapter
 
-        // ✅ Fetch alerts from server (this part is kept to show existing items)
-        fetchAlerts()
+        loadAndDisplayCameras()
 
-        // ✅ "Add Camera" button now acts as a "Play Stream" button
         val addButton: FloatingActionButton = findViewById(R.id.fab_add_camera)
         addButton.setOnClickListener {
             showAddCameraDialog()
         }
     }
-
-    // ✨ ---- METHODS FOR VIDEO PLAYBACK ---- ✨
 
     private fun initializePlayer() {
         exoPlayer = ExoPlayer.Builder(this).build()
@@ -60,18 +64,31 @@ class MainActivity : AppCompatActivity() {
             initializePlayer()
         }
 
-        // Make the player visible
         playerView.visibility = View.VISIBLE
 
-        // Create a media item and start playback
         val mediaItem = MediaItem.fromUri(videoUrl)
         exoPlayer?.setMediaItem(mediaItem)
         exoPlayer?.prepare()
         exoPlayer?.play()
 
         Toast.makeText(this, "Streaming from: $videoUrl", Toast.LENGTH_LONG).show()
+
+        saveUrl(videoUrl)
     }
-//http://192.168.68.131:8000/stream/index.m3u8
+
+    private fun saveUrl(url: String) {
+        val currentUrls = sharedPreferences.getStringSet(KEY_CAMERA_URLS, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+
+        if (currentUrls.add(url)) {
+            sharedPreferences.edit { putStringSet(KEY_CAMERA_URLS, currentUrls) }
+
+            // ✨ FIXED: Changed 'camera_id' to 'cameraid'
+            val newAlert = Alert(id = savedCameras.size + 1, timestamp = "Saved", image_url = url, cameraid = "Local")
+            savedCameras.add(newAlert)
+            alertAdapter.setData(savedCameras)
+        }
+    }
+
     private fun releasePlayer() {
         exoPlayer?.release()
         exoPlayer = null
@@ -83,37 +100,46 @@ class MainActivity : AppCompatActivity() {
         releasePlayer()
     }
 
-    // 🔸 Fetch existing alerts from the server
-    private fun fetchAlerts() {
+    private fun loadAndDisplayCameras() {
+        val savedUrls = sharedPreferences.getStringSet(KEY_CAMERA_URLS, emptySet()) ?: emptySet()
+        savedCameras.clear()
+        savedUrls.forEachIndexed { index, url ->
+            // ✨ FIXED: Changed 'camera_id' to 'cameraid'
+            savedCameras.add(Alert(id = index, timestamp = "Saved", image_url = url, cameraid = "Local"))
+        }
+        alertAdapter.setData(savedCameras)
+
+        fetchAlertsFromServer()
+    }
+
+    private fun fetchAlertsFromServer() {
         RetrofitClient.instance.getAlerts().enqueue(object : Callback<List<Alert>> {
             override fun onResponse(call: Call<List<Alert>>, response: Response<List<Alert>>) {
                 if (response.isSuccessful) {
-                    alertAdapter.setData(response.body() ?: emptyList())
+                    val serverAlerts = response.body() ?: emptyList()
+                    // You can merge server alerts with local ones here if needed
                 } else {
-                    Toast.makeText(this@MainActivity, "Failed to load alerts", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Failed to load alerts from server", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Alert>>, t: Throwable) {
-                t.printStackTrace()
-                Toast.makeText(this@MainActivity, "Connection error", Toast.LENGTH_SHORT).show()
+                // Fail silently if server is offline
             }
         })
     }
 
-    // 🔸 Show dialog to add a new camera
     private fun showAddCameraDialog() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Play Video Stream") // Changed title for clarity
+        builder.setTitle("Play Video Stream")
 
         val input = EditText(this)
         input.hint = "Enter camera URL (RTSP or HTTP)"
         builder.setView(input)
 
-        builder.setPositiveButton("Play") { dialog, _ -> // Changed button text
+        builder.setPositiveButton("Play") { dialog, _ ->
             val url = input.text.toString().trim()
             if (url.isNotEmpty()) {
-                // ✨ Directly play the video stream instead of sending to server
                 playVideoStream(url)
             } else {
                 Toast.makeText(this, "URL cannot be empty", Toast.LENGTH_SHORT).show()
@@ -125,7 +151,4 @@ class MainActivity : AppCompatActivity() {
 
         builder.show()
     }
-
-    // ⛔️ The function to send the camera to the server has been removed.
-    // private fun addCameraToServer(url: String) { ... }
 }
