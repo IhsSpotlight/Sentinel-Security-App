@@ -9,7 +9,8 @@ data class Alert(
     val id: Int,
     val timestamp: String,
     val image_url: String,
-    val cameraid: String
+    val cameraid: String,
+    var cameraName: String = "Local"
 )
 
 interface ApiService {

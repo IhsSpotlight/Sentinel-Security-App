@@ -41,12 +41,18 @@ class MainActivity : AppCompatActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.recycler_cameras)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        alertAdapter = AlertAdapter { alert ->
+        alertAdapter = AlertAdapter ( onViewClick = { alert ->
             playVideoStream(alert.image_url)
+        },  onEditClick = { alert ->
+            showEditCameraNameDialog(alert)
         }
+        )
         recyclerView.adapter = alertAdapter
 
         loadAndDisplayCameras()
+        loadAndDisplayCameraname()
+
+        // FAB
 
         val addButton: FloatingActionButton = findViewById(R.id.fab_add_camera)
         addButton.setOnClickListener {
@@ -74,6 +80,58 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Streaming from: $videoUrl", Toast.LENGTH_LONG).show()
 
         saveUrl(videoUrl)
+    }
+    private fun saveCameraNames() {
+        val cameraData = savedCameras.joinToString("|") {
+            "${it.image_url}::${it.cameraName}"
+        }
+        sharedPreferences.edit {
+            putString("camera_data", cameraData)
+        }
+    }
+
+    private fun loadAndDisplayCameraname() {
+        val cameraData = sharedPreferences.getString("camera_data", "") ?: ""
+        savedCameras.clear()
+
+        if (cameraData.isNotEmpty()) {
+            cameraData.split("|").forEachIndexed { index, entry ->
+                val parts = entry.split("::")
+                val url = parts.getOrNull(0) ?: ""
+                val name = parts.getOrNull(1) ?: "Unnamed Camera"
+                savedCameras.add(Alert(id = index, timestamp = "Saved", image_url = url, cameraid = "Local", cameraName = name))
+            }
+        }
+
+        alertAdapter.setData(savedCameras)
+        fetchAlertsFromServer()
+    }
+
+    private fun showEditCameraNameDialog(alert: Alert) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Edit Camera Name")
+
+        val input = EditText(this)
+
+        input.setText(alert.cameraName)
+        input.hint="Enter camera name"
+        builder.setView(input)
+
+        builder.setPositiveButton("Save") { dialog, _ ->
+            val newName = input.text.toString().trim()
+            if (newName.isNotEmpty()) {
+                alert.cameraName = newName
+                saveCameraNames()   // ✅ Save all camera names in SharedPreferences
+                alertAdapter.setData(savedCameras)
+            } else {
+                Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show()
+            }
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
+
+        builder.show()
     }
 
     private fun saveUrl(url: String) {
