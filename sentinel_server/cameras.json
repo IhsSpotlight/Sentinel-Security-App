@@ -1,0 +1,6 @@
+[
+    {"name": "Front Gate", "url": "rtsp://192.168.1.101:554/live"},
+    {"name": "Garage", "url": "rtsp://192.168.1.102:554/live"},
+    {"name": "Backyard", "url": "rtsp://192.168.1.103:554/live"},
+    {"name": "Hall", "url": "rtsp://192.168.1.104:554/live"}
+]
