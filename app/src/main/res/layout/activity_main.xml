@@ -80,68 +80,106 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true">
 
-        <RelativeLayout
+        <LinearLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="96dp"
+            android:paddingTop="8dp">
 
-            <LinearLayout
-                android:id="@+id/main_content"
+            <!-- PlayerView for Camera Stream -->
+            <androidx.media3.ui.PlayerView
+                android:id="@+id/player_view"
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                app:surface_type="surface_view"
+                app:use_controller="true"
+                tools:visibility="visible"/>
+
+            <!-- ===== NEW: Camera Info Section ===== -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/camera_info_section"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingBottom="96dp"
-                android:paddingTop="8dp">
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                tools:visibility="visible">
 
-                <!-- New PlayerView for Camera Stream -->
-                <androidx.media3.ui.PlayerView
-                    android:id="@+id/player_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="220dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone"
-                    app:surface_type="surface_view"
-                    app:use_controller="true"
-                    tools:visibility="visible"/>
-
-                <!-- ==== Recent Activity Section ==== -->
                 <TextView
-                    android:layout_width="match_parent"
+                    android:id="@+id/camera_address_text"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Recent Activity"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="8dp"
+                    android:textColor="#A0A0A0"
+                    android:textSize="14sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/btn_change_camera_name"
+                    android:layout_marginEnd="8dp"
+                    tools:text="192.168.1.101" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_change_camera_name"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Change Name"
+                    android:textColor="#009688"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     tools:ignore="HardcodedText" />
 
-                <!-- ==== Cameras Section ==== -->
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Your Cameras"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginBottom="8dp"
-                    tools:ignore="HardcodedText" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <!-- RecyclerView for camera list -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_cameras"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp"
-                    tools:listitem="@layout/item_camera_card" />
+            <!-- ==== Recent Activity Section ==== -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent Activity"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                tools:ignore="HardcodedText" />
 
-            </LinearLayout>
+            <!-- RecyclerView for recent activity would go here -->
 
-        </RelativeLayout>
+
+            <!-- ==== Cameras Section ==== -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Your Cameras"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                tools:ignore="HardcodedText" />
+
+            <!-- RecyclerView for camera list -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_cameras"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                tools:listitem="@layout/item_camera_card" />
+
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
