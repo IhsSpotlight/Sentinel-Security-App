@@ -1,9 +1,11 @@
 package com.example.sentinel
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -40,24 +42,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+        sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         playerView = findViewById(R.id.player_view)
 
         val recyclerView: RecyclerView = findViewById(R.id.recycler_cameras)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        alertAdapter = AlertAdapter ( onViewClick = { alert ->
+        alertAdapter = AlertAdapter { alert ->
             playVideoStream(alert.image_url)
-        },  onEditClick = { alert ->
-            showEditCameraNameDialog(alert)
         }
-        )
         recyclerView.adapter = alertAdapter
 
         loadAndDisplayCameras()
-        loadAndDisplayCameraname()
-
-        // FAB
 
         val addButton: FloatingActionButton = findViewById(R.id.fab_add_camera)
         addButton.setOnClickListener {
@@ -65,9 +61,19 @@ class MainActivity : AppCompatActivity() {
         }
 
         // 🔍 Automatically scan for IP cameras when app starts
-        CoroutineScope(Dispatchers.IO).launch {
-            autoDiscoverCameras()
+        // 🔍 Scan Cameras button
+        val scanButton: Button = findViewById(R.id.btn_scan_cameras)
+        scanButton.setOnClickListener {
+            val intent = Intent(this, ScanActivity::class.java)
+            startActivity(intent)
+
+            Toast.makeText(this, "Scanning network for cameras...", Toast.LENGTH_SHORT).show()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                autoDiscoverCameras()
+            }
         }
+
     }
 
     private fun initializePlayer() {
@@ -87,66 +93,13 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Streaming from: $videoUrl", Toast.LENGTH_LONG).show()
         saveUrl(videoUrl)
     }
-    private fun saveCameraNames() {
-        val cameraData = savedCameras.joinToString("|") {
-            "${it.image_url}::${it.cameraName}"
-        }
-        sharedPreferences.edit {
-            putString("camera_data", cameraData)
-        }
-    }
-
-    private fun loadAndDisplayCameraname() {
-        val cameraData = sharedPreferences.getString("camera_data", "") ?: ""
-        savedCameras.clear()
-
-        if (cameraData.isNotEmpty()) {
-            cameraData.split("|").forEachIndexed { index, entry ->
-                val parts = entry.split("::")
-                val url = parts.getOrNull(0) ?: ""
-                val name = parts.getOrNull(1) ?: "Unnamed Camera"
-                savedCameras.add(Alert(id = index, timestamp = "Saved", image_url = url, cameraid = "Local", cameraName = name))
-            }
-        }
-
-        alertAdapter.setData(savedCameras)
-        fetchAlertsFromServer()
-    }
-
-    private fun showEditCameraNameDialog(alert: Alert) {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Edit Camera Name")
-
-        val input = EditText(this)
-
-        input.setText(alert.cameraName)
-        input.hint="Enter camera name"
-        builder.setView(input)
-
-        builder.setPositiveButton("Save") { dialog, _ ->
-            val newName = input.text.toString().trim()
-            if (newName.isNotEmpty()) {
-                alert.cameraName = newName
-                saveCameraNames()   // ✅ Save all camera names in SharedPreferences
-                alertAdapter.setData(savedCameras)
-            } else {
-                Toast.makeText(this, "Name cannot be empty", Toast.LENGTH_SHORT).show()
-            }
-            dialog.dismiss()
-        }
-
-        builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
-
-        builder.show()
-    }
 
     private fun saveUrl(url: String) {
         val currentUrls = sharedPreferences.getStringSet(KEY_CAMERA_URLS, mutableSetOf())?.toMutableSet() ?: mutableSetOf()
 
         if (currentUrls.add(url)) {
             sharedPreferences.edit { putStringSet(KEY_CAMERA_URLS, currentUrls) }
-// In MainActivity.kt, inside the saveUrl function
-            val newAlert = Alert(savedCameras.size + 1, "Saved", url, "Local", status = "Saved")
+            val newAlert = Alert(savedCameras.size + 1, "Saved", url, "Local")
             savedCameras.add(newAlert)
             alertAdapter.setData(savedCameras)
         }
@@ -167,8 +120,7 @@ class MainActivity : AppCompatActivity() {
         val savedUrls = sharedPreferences.getStringSet(KEY_CAMERA_URLS, emptySet()) ?: emptySet()
         savedCameras.clear()
         savedUrls.forEachIndexed { index, url ->
-// In MainActivity.kt, inside the saveUrl function
-            val newAlert = Alert(savedCameras.size + 1, "Saved", url, "Local", status = "Saved")
+            savedCameras.add(Alert(index, "Saved", url, "Local"))
         }
         alertAdapter.setData(savedCameras)
 
@@ -208,21 +160,24 @@ class MainActivity : AppCompatActivity() {
         builder.show()
     }
 
-    // 🔍 Auto-discover IP cameras on the same network
+    //  Auto-discover IP cameras on the same network
     private suspend fun autoDiscoverCameras() {
         val subnet = "192.168.0." // Change if your network uses different subnet
         val foundCameras = mutableListOf<String>()
 
         withContext(Dispatchers.IO) {
             for (i in 1..255) {
-                val host = subnet + i
+                val host = subnet + i // 'host' contains the IP address
                 try {
                     val reachable = InetAddress.getByName(host).isReachable(200)
                     if (reachable && checkForCamera(host)) {
                         val rtspUrl = "rtsp://$host:554/stream"
                         foundCameras.add(rtspUrl)
                         saveUrl(rtspUrl)
-                        sendToBackend(rtspUrl)
+
+                        // FIX: Pass both the URL and the host (IP) to the function
+                        sendToBackend(rtspUrl, host)
+
                         sendTelegramNotification("📷 New camera found: $rtspUrl")
                     }
                 } catch (_: IOException) { }
@@ -252,13 +207,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     // ☁️ Send camera info to backend
-    private fun sendToBackend(url: String) {
-        val cameraRequest = CameraRequest(
-            url,
-            ipAddress = TODO(),
-            port = TODO(),
-            streamUrl = TODO()
-        )
+    private fun sendToBackend(url: String,ip: String) {
+        val cameraRequest = CameraRequest(url, ip)
         RetrofitClient.instance.addCamera(cameraRequest).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {}
             override fun onFailure(call: Call<Void>, t: Throwable) {}
