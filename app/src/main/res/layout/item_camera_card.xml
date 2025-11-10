@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/checklist"
+                android:background="@drawable/videocamoff"
                 android:padding="6dp"
                 android:text="Online"
                 android:textColor="@android:color/white"
@@ -42,17 +42,56 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/camera_name"
+        <!-- Camera name + edit button -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:paddingStart="16dp"
-            android:paddingTop="8dp"
             android:paddingEnd="16dp"
-            android:text="Living Room Cam"
-            android:textColor="@android:color/white"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:paddingTop="8dp">
+
+            <TextView
+                android:id="@+id/camera_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Camera 1"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_edit_camera_name"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                app:backgroundTint="#00695C"
+                android:contentDescription="Edit camera name" />
+
+
+        </LinearLayout>
+
+        <!-- Hidden input for editing/adding -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/camera_name_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            app:hintTextColor="@color/white">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_camera_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter camera name"
+                android:textColor="@android:color/white"
+                android:inputType="text" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_live_view"
@@ -60,7 +99,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:text="Live View"
+            android:text="View"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="16sp"
