@@ -34,6 +34,7 @@
             </intent-filter>
         </activity>
 
+
         <!-- Scan Activity (previous) -->
         <activity
             android:name=".ScanActivity"

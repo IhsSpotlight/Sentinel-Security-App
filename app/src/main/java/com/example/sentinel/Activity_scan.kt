@@ -1,7 +1,6 @@
 package com.example.sentinel
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +14,7 @@ class ScanActivity : AppCompatActivity() {
     private lateinit var scanStatus: TextView
     private lateinit var stopButton: Button
     private lateinit var returnButton: Button
+    private lateinit var logScroll: ScrollView
 
     private var isScanning = true
     private val mainScope = CoroutineScope(Dispatchers.Main + Job())
@@ -28,6 +28,7 @@ class ScanActivity : AppCompatActivity() {
         scanStatus = findViewById(R.id.scan_status)
         stopButton = findViewById(R.id.btn_stop_scan)
         returnButton = findViewById(R.id.btn_return_main)
+        logScroll = findViewById(R.id.log_scroll)
 
         stopButton.setOnClickListener { isScanning = false }
         returnButton.setOnClickListener { finish() }
@@ -37,7 +38,7 @@ class ScanActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun startNetworkScan() {
-        val baseIp = "192.168.0." // You can detect automatically later
+        val baseIp = "192.168.68." // You can make this dynamic later
         appendLog("Starting network scan...")
 
         mainScope.launch(Dispatchers.IO) {
@@ -55,14 +56,10 @@ class ScanActivity : AppCompatActivity() {
                     if (reachable) {
                         withContext(Dispatchers.Main) {
                             appendLog("✅ Active device found: $ip")
-
-                            // 🔹 Try to identify camera ports
                             appendLog("→ Checking RTSP (554) and HTTP (8080)...")
                         }
                     }
-                } catch (e: Exception) {
-                    // Ignore errors
-                }
+                } catch (_: Exception) { }
             }
 
             withContext(Dispatchers.Main) {
@@ -73,12 +70,10 @@ class ScanActivity : AppCompatActivity() {
         }
     }
 
-    @SuppressLint("WrongViewCast")
     private fun appendLog(message: String) {
         logOutput.append("\n$message")
-        val scrollView = findViewById<ScrollView>(R.id.scan_progress)
-        scrollView?.post {
-            scrollView.fullScroll(ScrollView.FOCUS_DOWN)
+        logScroll.post {
+            logScroll.fullScroll(ScrollView.FOCUS_DOWN)
         }
     }
 

@@ -18,9 +18,9 @@
         android:layout_width="match_parent"/>
 
     <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
         android:id="@+id/scan_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:text="Initializing..."
         android:textColor="#00FF99"
         android:textSize="16sp"
@@ -36,19 +36,20 @@
         android:max="255"
         android:layout_marginBottom="12dp"/>
 
+    <!-- ✅ Fixed: unique ID for the ScrollView -->
     <ScrollView
+        android:id="@+id/log_scroll"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:background="#181818"
         android:padding="8dp"
-        android:overScrollMode="never"
-        android:id="@id/scan_progress">
+        android:overScrollMode="never">
 
         <TextView
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
             android:id="@+id/log_output"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Logs will appear here..."
             android:textColor="#DDDDDD"
             android:textSize="14sp"
