@@ -7,6 +7,9 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
 import java.net.InetAddress
+import java.net.InetSocketAddress
+import java.net.Socket
+import java.net.URL
 
 class ScanActivity : AppCompatActivity() {
 
@@ -35,6 +38,103 @@ class ScanActivity : AppCompatActivity() {
         returnButton.setOnClickListener { finish() }
 
         startNetworkScan()
+    }
+
+    private suspend fun detectCamera(ip: String): String? {
+        val rtspPorts = listOf(554, 8554)
+        val httpPorts = listOf(80, 8080, 8000, 8787)
+
+        val rtspPaths = listOf(
+            "rtsp://$ip:554/stream",
+            "rtsp://$ip:554/live",
+            "rtsp://$ip:554/live/ch0",
+            "rtsp://$ip:554/h264",
+            "rtsp://$ip:554/av0_0",
+            "rtsp://$ip:8554/video"
+        )
+
+        val mjpegPaths = listOf(
+            "http://$ip:8080/video",
+            "http://$ip:8080/stream",
+            "http://$ip:8080/mjpeg",
+            "http://$ip:8080/cam.mjpeg",
+            "http://$ip/capture",
+            "http://$ip/mjpeg/1"
+        )
+
+        // 1. Check RTSP ports
+        for (port in rtspPorts) {
+            if (isPortOpen(ip, port)) {
+                for (url in rtspPaths) {
+                    if (isStream(url)) return "🎥 RTSP Stream → $url"
+                }
+            }
+        }
+
+        // 2. Check MJPEG / HTTP camera ports
+        for (port in httpPorts) {
+            if (isPortOpen(ip, port)) {
+                for (url in mjpegPaths) {
+                    if (isStream(url)) return "📷 MJPEG Stream → $url"
+                }
+                return "📡 HTTP Server → http://$ip:$port"
+            }
+        }
+
+        return null
+    }
+
+    private fun isPortOpen(ip: String, port: Int, timeout: Int = 500): Boolean {
+        return try {
+            Socket().use { socket ->
+                socket.connect(InetSocketAddress(ip, port), timeout)
+                true
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+    private fun isStream(url: String): Boolean {
+        return try {
+            val connection = URL(url).openConnection()
+            connection.connectTimeout = 800
+            connection.readTimeout = 800
+            connection.getInputStream().use { stream ->
+                val buffer = ByteArray(256)
+                val read = stream.read(buffer)
+                read > 0
+            }
+        } catch (_: Exception) {
+            false
+        }
+    }
+
+
+
+
+    // Checks for video streaming on RTSP (554), HTTP MJPEG (8080, 80)
+    private fun checkVideoStream(ip: String): String? {
+        val ports = listOf(8080, 554, 80)
+
+        for (port in ports) {
+            try {
+                val socket = Socket()
+                socket.connect(InetSocketAddress(ip, port), 800)
+                socket.close()
+
+                return when (port) {
+                    554 -> "🎥 RTSP stream detected at rtsp://$ip:554/stream/index.m3u8"
+                    8080 -> "📷 MJPEG stream at http://$ip:8000/stream/index.m3u8"
+                    80 -> "📷 HTTP server at http://$ip:80/stream/index.m3u8"
+                    else -> null
+                }
+            } catch (_: Exception) {
+                // Port closed, ignore
+            }
+        }
+
+        return null
     }
 
     @SuppressLint("DefaultLocale")
@@ -72,12 +172,21 @@ class ScanActivity : AppCompatActivity() {
 
                 try {
                     val reachable = InetAddress.getByName(ip).isReachable(100)
-                    if (reachable) {
+                    if (isHostAlive(ip)) {
                         withContext(Dispatchers.Main) {
-                            appendLog("✅ Active device found: $ip")
-                            //appendLog("→ Checking RTSP (554) and HTTP (8080)...")
+                            appendLog("✅ Active: $ip — checking stream...")
+                        }
+
+                        val result = detectCamera(ip)
+
+                        withContext(Dispatchers.Main) {
+                            if (result != null)
+                                appendLog("🎥 $result")
+                            else
+                                appendLog("❌ No camera stream found on $ip")
                         }
                     }
+
                 } catch (_: Exception) { }
             }
 
@@ -88,6 +197,11 @@ class ScanActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun CoroutineScope.isHostAlive(ip: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
 
     private fun appendLog(message: String) {
         logOutput.append("\n$message")
