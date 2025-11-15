@@ -1,109 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:layout_margin="8dp"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginEnd="8dp"
-    android:layout_marginBottom="16dp"
-    app:cardBackgroundColor="#1F1F1F"
     app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    app:cardElevation="2dp"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <ImageView
+            android:id="@+id/camera_thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="250dp">
+            android:layout_height="200dp"
+            android:scaleType="centerCrop" />
 
-            <ImageView
-                android:id="@+id/camera_thumbnail"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:contentDescription="Camera preview"
-                android:scaleType="centerCrop" />
-
-            <TextView
-                android:id="@+id/status_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/videocamoff"
-                android:padding="6dp"
-                android:text="Online"
-                android:textColor="@android:color/white"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Camera name + edit button -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="8dp">
+            android:padding="12dp"
+            android:gravity="center_vertical">
 
             <TextView
                 android:id="@+id/camera_name"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Camera 1"
+                android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                android:text="Camera" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_edit_camera_name"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit"
-                app:backgroundTint="#00695C"
-                android:contentDescription="Edit camera name" />
-
-
+                android:text="Edit" />
         </LinearLayout>
 
-        <!-- Hidden input for editing/adding -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/camera_name_input_layout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/status_text"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:visibility="gone"
-            app:hintTextColor="@color/white">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/input_camera_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Enter camera name"
-                android:textColor="@android:color/white"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:paddingStart="12dp"
+            android:paddingBottom="8dp"
+            android:textColor="@android:color/black"
+            android:text="Status" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_live_view"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:text="View"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            app:backgroundTint="#00695C"
-            app:cornerRadius="4dp" />
+            android:text="View" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

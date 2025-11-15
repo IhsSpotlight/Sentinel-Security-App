@@ -1,6 +1,7 @@
 package com.example.sentinel
 
 import android.annotation.SuppressLint
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -36,9 +37,27 @@ class ScanActivity : AppCompatActivity() {
         startNetworkScan()
     }
 
+    @SuppressLint("DefaultLocale")
+    private fun getDeviceBaseIP(): String {
+        val wifiManager = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+        val ip = wifiManager.connectionInfo.ipAddress
+
+        val ipString = String.format(
+            "%d.%d.%d.",
+            ip and 0xff,
+            ip shr 8 and 0xff,
+            ip shr 16 and 0xff
+        )
+
+        return ipString
+    }
+
+
     @SuppressLint("SetTextI18n")
     private fun startNetworkScan() {
-        val baseIp = "192.168.68." // You can make this dynamic later
+        val baseIp = getDeviceBaseIP() //"192.168.68." // You can make this dynamic later
+
+        appendLog("Found Base Ip: $baseIp")
         appendLog("Starting network scan...")
 
         mainScope.launch(Dispatchers.IO) {
@@ -56,7 +75,7 @@ class ScanActivity : AppCompatActivity() {
                     if (reachable) {
                         withContext(Dispatchers.Main) {
                             appendLog("✅ Active device found: $ip")
-                            appendLog("→ Checking RTSP (554) and HTTP (8080)...")
+                            //appendLog("→ Checking RTSP (554) and HTTP (8080)...")
                         }
                     }
                 } catch (_: Exception) { }
