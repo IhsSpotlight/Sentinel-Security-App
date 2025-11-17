@@ -33,6 +33,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private val savedCameras = mutableListOf<Alert>()
     private val PREFS_NAME = "SentinelPrefs"
+    private val KEY_FIRST_LAUNCH = "first_launch"
+
     private val KEY_CAMERA_URLS = "camera_urls"
 
     private val telegramBotToken = "YOUR_TELEGRAM_BOT_TOKEN"
@@ -44,6 +46,12 @@ class MainActivity : AppCompatActivity() {
 
         sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         playerView = findViewById(R.id.player_view)
+        val isFirstLaunch = sharedPreferences.getBoolean(KEY_FIRST_LAUNCH, true)
+
+        if (isFirstLaunch) {
+            showHelpPopup()
+            sharedPreferences.edit { putBoolean(KEY_FIRST_LAUNCH, false) }
+        }
 
         val recyclerView: RecyclerView = findViewById(R.id.recycler_cameras)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -58,11 +66,6 @@ class MainActivity : AppCompatActivity() {
         val addButton: FloatingActionButton = findViewById(R.id.fab_add_camera)
         addButton.setOnClickListener {
             showAddCameraDialog()
-        }
-
-        val streamUrl = intent.getStringExtra("STREAM_URL")
-        if (!streamUrl.isNullOrEmpty()) {
-            playVideoStream(streamUrl)
         }
 
         // 🔍 Automatically scan for IP cameras when app starts
@@ -80,6 +83,34 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun showHelpPopup() {
+        val message = """
+        🛡️ Sentinel App Help 🛡️
+
+        This app allows you to:
+        1. Scan your local network for IP cameras.
+        2. Detect RTSP or MJPEG video streams automatically.
+        3. Play live streams using the built-in ExoPlayer.
+        4. Save your favorite camera URLs for easy access.
+        5. Send detected camera info to a backend server.
+        6. Receive Telegram alerts for new cameras found.
+        7. Delete saved cameras when needed.
+
+        How to use:
+        - Tap "Scan Cameras" to discover devices on your network.
+        - Tap a saved camera to play the video stream.
+        - Use the delete button to remove unwanted cameras.
+        - Press "Help" anytime to see this information.
+    """.trimIndent()
+
+        AlertDialog.Builder(this)
+            .setTitle("Sentinel App Instructions")
+            .setMessage(message)
+            .setPositiveButton("OK") { dialog, _ -> dialog.dismiss() }
+            .show()
+    }
+
 
     private fun initializePlayer() {
         exoPlayer = ExoPlayer.Builder(this).build()

@@ -142,16 +142,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- ==== Recent Activity Section ==== -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Recent Activity"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"
-                tools:ignore="HardcodedText" />
+
 
             <!-- RecyclerView for recent activity would go here -->
 
@@ -169,6 +160,16 @@
                 android:layout_gravity="center_horizontal"
                 android:drawableLeft="@drawable/ic_baseline_camera_alt_24" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Recent Activity"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="8dp"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -197,6 +198,18 @@
 
     <!-- Floating Add Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/helpbtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/help"
+        app:tint="@android:color/white"
+        app:backgroundTint="#143344"
+        tools:ignore="HardcodedText" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_add_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -208,5 +221,6 @@
         app:backgroundTint="#00695C"
         android:contentDescription="Add new camera"
         tools:ignore="HardcodedText" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

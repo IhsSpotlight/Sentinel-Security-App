@@ -17,6 +17,7 @@
             android:id="@+id/camera_thumbnail"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:outlineAmbientShadowColor="@color/black"
             android:scaleType="centerCrop" />
 
         <LinearLayout
@@ -24,6 +25,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="12dp"
+            android:outlineAmbientShadowColor="@color/black"
             android:gravity="center_vertical">
 
             <TextView
@@ -31,7 +33,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
+                android:textColor="@android:color/black"
                 android:text="Camera" />
 
             <com.google.android.material.button.MaterialButton
@@ -39,7 +41,8 @@
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit" />
+                android:textColor="@color/black"
+                android:text="delete" />
         </LinearLayout>
 
         <TextView
@@ -56,6 +59,8 @@
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/cardview_dark_background"
             android:text="View" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

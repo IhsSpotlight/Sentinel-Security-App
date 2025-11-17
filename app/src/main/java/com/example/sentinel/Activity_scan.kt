@@ -50,6 +50,16 @@ class ScanActivity : AppCompatActivity() {
         returnButton.setOnClickListener { finish() }
 
         startNetworkScan()
+
+        val scanButton: Button = findViewById(R.id.btn_restart_scan)
+        scanButton.setOnClickListener {
+            val intent = Intent(this, ScanActivity::class.java)
+            startActivity(intent)
+
+            Toast.makeText(this, "Restarted Scanning network for cameras...", Toast.LENGTH_SHORT).show()
+
+
+        }
     }
 
     private suspend fun detectCamera(ip: String): String? {
@@ -106,11 +116,11 @@ class ScanActivity : AppCompatActivity() {
                         return "📷 MJPEG Stream → $url"
                     }
                 }
-                val serverUrl = "http://$ip:$port"
+                val serverUrl = "http://$ip:$port/stream/index.m3u8"
                 runOnUiThread {
                     AlertDialog.Builder(this@ScanActivity)
-                        .setTitle("HTTP Server Found")
-                        .setMessage("📡 HTTP Server → $serverUrl")
+                        .setTitle("Ip Camera Found")
+                        .setMessage("📡 Camera Streaming → $serverUrl")
                         .setPositiveButton("OPEN") { _, _ ->
                             val intent = Intent(this@ScanActivity, MainActivity::class.java)
                             intent.putExtra("STREAM_URL", serverUrl)
@@ -119,7 +129,7 @@ class ScanActivity : AppCompatActivity() {
                         .setNegativeButton("CANCEL", null)
                         .show()
                 }
-                return "📡 HTTP Server → $serverUrl"
+                return "📡 Camera Streaming → $serverUrl"
             }
         }
 
