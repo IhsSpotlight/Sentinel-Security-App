@@ -6,10 +6,14 @@ import android.os.Bundle
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.*
+import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.URL
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
 
 class ScanActivity : AppCompatActivity() {
 
@@ -199,7 +203,20 @@ class ScanActivity : AppCompatActivity() {
     }
 
     private fun CoroutineScope.isHostAlive(ip: String): Boolean {
-        TODO("Not yet implemented")
+        return try {
+            // Run the command on the I/O dispatcherwithContext(Dispatchers.IO) {
+            val command = "ping -c 1 -W 1 $ip" // -c 1: one packet, -W 1: 1-second timeout
+            val process = Runtime.getRuntime().exec(command)
+            val exitCode = process.waitFor()
+            exitCode == 0
+        }
+     catch (e: IOException) {
+        // Could be a security exception or other issue
+        false
+    } catch (e: InterruptedException) {
+        // The waiting thread was interrupted
+        false
+    }
     }
 
 
