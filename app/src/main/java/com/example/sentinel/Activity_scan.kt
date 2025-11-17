@@ -1,10 +1,14 @@
 package com.example.sentinel
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import java.io.IOException
 import java.net.InetAddress
@@ -13,9 +17,12 @@ import java.net.Socket
 import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlin.jvm.java
 
 
 class ScanActivity : AppCompatActivity() {
+
+    private lateinit var rootLayout: View  // <-- ADD THIS
 
     private lateinit var progressBar: ProgressBar
     private lateinit var logOutput: TextView
@@ -31,6 +38,7 @@ class ScanActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_scan)
 
+        rootLayout = findViewById(R.id.rootlayout)
         progressBar = findViewById(R.id.scan_progress)
         logOutput = findViewById(R.id.log_output)
         scanStatus = findViewById(R.id.scan_status)
@@ -46,10 +54,10 @@ class ScanActivity : AppCompatActivity() {
 
     private suspend fun detectCamera(ip: String): String? {
         val rtspPorts = listOf(554, 8554)
-        val httpPorts = listOf(80, 8080, 8000, 8787)
+        val httpPorts = listOf( 8080, 8000, 8787)
 
         val rtspPaths = listOf(
-            "rtsp://$ip:554/stream",
+            "rtsp://$ip:8000/stream",
             "rtsp://$ip:554/live",
             "rtsp://$ip:554/live/ch0",
             "rtsp://$ip:554/h264",
@@ -58,10 +66,10 @@ class ScanActivity : AppCompatActivity() {
         )
 
         val mjpegPaths = listOf(
-            "http://$ip:8080/video",
-            "http://$ip:8080/stream",
-            "http://$ip:8080/mjpeg",
-            "http://$ip:8080/cam.mjpeg",
+            "http://$ip:8000/video",
+            "http://$ip:8000/stream",
+            "http://$ip:8000/mjpeg",
+            "http://$ip:8000/cam.mjpeg",
             "http://$ip/capture",
             "http://$ip/mjpeg/1"
         )
@@ -76,14 +84,46 @@ class ScanActivity : AppCompatActivity() {
         }
 
         // 2. Check MJPEG / HTTP camera ports
+
         for (port in httpPorts) {
             if (isPortOpen(ip, port)) {
-                for (url in mjpegPaths) {
-                    if (isStream(url)) return "📷 MJPEG Stream → $url"
+                for (path in mjpegPaths) {
+                    val url = "http://$ip:$port$path"
+                    if (isStream(url)) {
+                        runOnUiThread {
+                            AlertDialog.Builder(this@ScanActivity)
+                                .setTitle("Camera Found")
+                                .setMessage("📷 MJPEG Stream → $url")
+                                .setPositiveButton("OPEN") { _, _ ->
+                                    // Open in MainActivity
+                                    val intent = Intent(this@ScanActivity, MainActivity::class.java)
+                                    intent.putExtra("STREAM_URL", url)
+                                    startActivity(intent)
+                                }
+                                .setNegativeButton("CANCEL", null)
+                                .show()
+                        }
+                        return "📷 MJPEG Stream → $url"
+                    }
                 }
-                return "📡 HTTP Server → http://$ip:$port"
+                val serverUrl = "http://$ip:$port"
+                runOnUiThread {
+                    AlertDialog.Builder(this@ScanActivity)
+                        .setTitle("HTTP Server Found")
+                        .setMessage("📡 HTTP Server → $serverUrl")
+                        .setPositiveButton("OPEN") { _, _ ->
+                            val intent = Intent(this@ScanActivity, MainActivity::class.java)
+                            intent.putExtra("STREAM_URL", serverUrl)
+                            startActivity(intent)
+                        }
+                        .setNegativeButton("CANCEL", null)
+                        .show()
+                }
+                return "📡 HTTP Server → $serverUrl"
             }
         }
+
+
 
         return null
     }

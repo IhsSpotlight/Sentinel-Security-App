@@ -60,6 +60,11 @@ class MainActivity : AppCompatActivity() {
             showAddCameraDialog()
         }
 
+        val streamUrl = intent.getStringExtra("STREAM_URL")
+        if (!streamUrl.isNullOrEmpty()) {
+            playVideoStream(streamUrl)
+        }
+
         // 🔍 Automatically scan for IP cameras when app starts
         // 🔍 Scan Cameras button
         val scanButton: Button = findViewById(R.id.btn_scan_cameras)
