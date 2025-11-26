@@ -30,6 +30,7 @@ class ScanActivity : AppCompatActivity() {
     private lateinit var stopButton: Button
     private lateinit var returnButton: Button
     private lateinit var logScroll: ScrollView
+    
 
     private var isScanning = true
     private val mainScope = CoroutineScope(Dispatchers.Main + Job())
@@ -106,7 +107,7 @@ class ScanActivity : AppCompatActivity() {
                         return "📷 MJPEG Stream → $url"
                     }
                 }
-                val serverUrl = "http://$ip:$port"
+                val serverUrl = "http://$ip:$port/stream/index.m3u8"
                 runOnUiThread {
                     AlertDialog.Builder(this@ScanActivity)
                         .setTitle("HTTP Server Found")
