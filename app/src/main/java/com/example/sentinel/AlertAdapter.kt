@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 // The click listener is passed to the constructor
-class AlertAdapter(private val onAlertClick: (Alert) -> Unit) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
+class AlertAdapter(private val onAlertClick: (Alert) -> Unit
+) : RecyclerView.Adapter<AlertAdapter.AlertViewHolder>() {
 
     private var alerts: List<Alert> = emptyList()
 
@@ -40,7 +41,7 @@ class AlertAdapter(private val onAlertClick: (Alert) -> Unit) : RecyclerView.Ada
         holder.cameraName.text = "Camera: ${currentAlert.cameraid}"
 
         // Set the status text.
-        holder.statusText.text = "Online" // This can be made dynamic later.
+        holder.statusText.text = "Unknown" // This can be made dynamic later.
 
         // Use Glide to load an image from the URL.
         // Since your URL is a video stream, Glide will likely show an error or placeholder, which is expected.
